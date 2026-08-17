@@ -5,6 +5,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 const Users = () => {
   const [users, setUsers] = useState({});
+  const [requestErr, setRequestErr] = useState("");
   const axiosPrivate = useAxiosPrivate();
   const navigate = useNavigate();
   const location = useLocation();
@@ -21,18 +22,30 @@ const Users = () => {
 
         console.log(response.data);
         isMounted && setUsers(response.data);
+        isMounted && setRequestErr("");
       } catch (err) {
         if (axios.isCancel(err)) {
           console.log("Request canceled");
           return;
         }
 
-        console.error(err);
+        // If server returned a response, check status for auth errors
+        if (
+          err?.response &&
+          (err.response.status === 401 || err.response.status === 403)
+        ) {
+          navigate("/login", {
+            state: { from: location },
+            replace: true,
+          });
+          return;
+        }
 
-        navigate("/login", {
-          state: { from: location },
-          replace: true,
-        });
+        // For other errors (network, 5xx, etc.), render the error message
+        console.error(err);
+        const message =
+          err?.response?.data?.message || err?.message || "Request failed";
+        isMounted && setRequestErr(message);
       }
     };
 
@@ -48,7 +61,9 @@ const Users = () => {
     <article>
       <h2>Users List</h2>
 
-      {users?.length ? (
+      {requestErr ? (
+        <p className="errmsg">{requestErr}</p>
+      ) : users?.length ? (
         <ul>
           {users.map((user, i) => (
             <li key={user?.id ?? i}>{user?.username}</li>
