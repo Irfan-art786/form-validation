@@ -5,7 +5,7 @@ import Layout from "./components/Layout.jsx";
 import Editor from "./components/Editor.jsx";
 import Admin from "./components/Admin.jsx";
 import Missing from "./components/Missing.jsx";
-import Unauthorized from "./components/Home.jsx";
+import Unauthorized from "./components/Unauthorized.jsx";
 import Lounge from "./components/Lounge.jsx";
 import LinkPage from "./components/LinkPage.jsx";
 import { Routes, Route } from "react-router-dom";
