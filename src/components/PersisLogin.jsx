@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import useRefreshToken from "../hooks/useRefreshToken";
 import useAuth from "../hooks/useAuth";
 
-const PersisLogin = () => {
+const PersistLogin = () => {
   const [isLoading, setIsLoading] = useState(true);
   const refresh = useRefreshToken();
   const { auth, persist } = useAuth();
@@ -21,23 +21,16 @@ const PersisLogin = () => {
       }
     };
 
-    // If persistence is not enabled, skip refresh logic and render outlet immediately
-    if (!persist) {
-      setIsLoading(false);
-    } else if (!auth?.accessToken) {
-      // No access token and persistence enabled: try to refresh
-      verifyRefreshToken();
-    } else {
-      // Access token already present
-      setIsLoading(false);
-    }
+    // persist added here AFTER tutorial video
+    // Avoids unwanted call to verifyRefreshToken
+    !auth?.accessToken && persist ? verifyRefreshToken() : setIsLoading(false);
 
     return () => (isMounted = false);
-  }, [persist, auth?.accessToken, refresh]);
+  }, []);
 
   useEffect(() => {
     console.log(`isLoading: ${isLoading}`);
-    console.log(`at: ${JSON.stringify(auth?.accessToken)}`);
+    console.log(`aT: ${JSON.stringify(auth?.accessToken)}`);
   }, [isLoading]);
 
   return (
@@ -45,4 +38,4 @@ const PersisLogin = () => {
   );
 };
 
-export default PersisLogin;
+export default PersistLogin;
