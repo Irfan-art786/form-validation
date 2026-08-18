@@ -6,7 +6,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 const LOGIN_URL = "/auth";
 
 const Login = () => {
-  const { setAuth } = useAuth();
+  const { setAuth, persist, setPersist } = useAuth();
   const userRef = useRef();
   const errRef = useRef();
 
@@ -56,6 +56,14 @@ const Login = () => {
     }
   };
 
+  const togglePersist = () => {
+    setPersist((prev) => !prev);
+  };
+
+  useEffect(() => {
+    localStorage.setItem("persist", persist);
+  }, [persist]);
+
   return (
     <section>
       <p
@@ -92,6 +100,15 @@ const Login = () => {
           }}
         />
         <button type="submit">Sign In</button>
+        <div className="persistCheck">
+          <input
+            type="checkbox"
+            checked={persist}
+            onChange={togglePersist}
+            id="persist"
+          />
+          <label htmlFor="persist">Trust this devise</label>
+        </div>
       </form>
       <p>
         Need an account?

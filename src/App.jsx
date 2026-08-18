@@ -10,6 +10,7 @@ import Lounge from "./components/Lounge.jsx";
 import LinkPage from "./components/LinkPage.jsx";
 import { Routes, Route } from "react-router-dom";
 import RequiredAuth from "./components/RequiredAuth.jsx";
+import PersisLogin from "./components/PersisLogin.jsx";
 
 const ROLES = {
   User: 2001,
@@ -28,22 +29,26 @@ function App() {
         <Route path="unauthorized" element={<Unauthorized />} />
 
         {/* We want to protect these routes */}
-        <Route element={<RequiredAuth allowedRoles={[ROLES.User]} />}>
-          <Route path="/" element={<Home />} />
-        </Route>
+        <Route element={<PersisLogin />}>
+          <Route element={<RequiredAuth allowedRoles={[ROLES.User]} />}>
+            <Route path="/" element={<Home />} />
+          </Route>
 
-        <Route element={<RequiredAuth allowedRoles={[ROLES.Editor]} />}>
-          <Route path="editor" element={<Editor />} />
-        </Route>
+          <Route element={<RequiredAuth allowedRoles={[ROLES.Editor]} />}>
+            <Route path="editor" element={<Editor />} />
+          </Route>
 
-        <Route element={<RequiredAuth allowedRoles={[ROLES.Admin]} />}>
-          <Route path="admin" element={<Admin />} />
-        </Route>
+          <Route element={<RequiredAuth allowedRoles={[ROLES.Admin]} />}>
+            <Route path="admin" element={<Admin />} />
+          </Route>
 
-        <Route
-          element={<RequiredAuth allowedRoles={[ROLES.Editor, ROLES.Admin]} />}
-        >
-          <Route path="lounge" element={<Lounge />} />
+          <Route
+            element={
+              <RequiredAuth allowedRoles={[ROLES.Editor, ROLES.Admin]} />
+            }
+          >
+            <Route path="lounge" element={<Lounge />} />
+          </Route>
         </Route>
 
         {/* Catch all */}
