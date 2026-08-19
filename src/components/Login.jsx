@@ -2,11 +2,13 @@ import { useEffect, useState, useRef } from "react";
 import axios from "../api/axios.js";
 import useAuth from "../hooks/useAuth.js";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import useInput from "../hooks/useInput.js";
+import useToggle from "../hooks/useToggle.js";
 
 const LOGIN_URL = "/auth";
 
 const Login = () => {
-  const { setAuth, persist, setPersist } = useAuth();
+  const { setAuth } = useAuth();
   const userRef = useRef();
   const errRef = useRef();
 
@@ -14,9 +16,11 @@ const Login = () => {
   const navigate = useNavigate();
   const from = location.state?.from?.pathname || "/";
 
-  const [user, setUser] = useState("");
+  const [user, resetUser, userAttribs] = useInput("user", ""); // useLocalStorage("user", ""); // useState("");
   const [pwd, setPwd] = useState("");
   const [errMsg, setErrMsg] = useState("");
+
+  const [check, toggleCheck] = useToggle("persist", false);
 
   useEffect(() => {
     userRef.current.focus();
@@ -36,9 +40,8 @@ const Login = () => {
       );
       console.log(JSON.stringify(response?.data));
       const accessToken = response?.data?.accessToken;
-      const roles = response?.data?.roles;
-      setAuth({ user, pwd, accessToken,  roles });
-      setUser("");
+      setAuth({ user, accessToken });
+      resetUser();
       setPwd("");
       navigate(from, { replace: true });
     } catch (err) {
@@ -55,13 +58,13 @@ const Login = () => {
     }
   };
 
-  const togglePersist = () => {
-    setPersist((prev) => !prev);
-  };
+  // const togglePersist = () => {
+  //   setPersist((prev) => !prev);
+  // };
 
-  useEffect(() => {
-    localStorage.setItem("persist", persist);
-  }, [persist]);
+  // useEffect(() => {
+  //   localStorage.setItem("persist", persist);
+  // }, [persist]);
 
   return (
     <section>
@@ -81,11 +84,7 @@ const Login = () => {
           ref={userRef}
           autoComplete="off"
           required
-          value={user}
-          onChange={(e) => {
-            setUser(e.target.value);
-            setErrMsg("");
-          }}
+          {...userAttribs}
         />
         <label htmlFor="password">Password:</label>
         <input
@@ -102,8 +101,8 @@ const Login = () => {
         <div className="persistCheck">
           <input
             type="checkbox"
-            checked={persist}
-            onChange={togglePersist}
+            checked={check}
+            onChange={toggleCheck}
             id="persist"
           />
           <label htmlFor="persist">Trust this devise</label>
